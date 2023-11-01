@@ -133,6 +133,64 @@ as.numeric(factor_vec)
 most used fct_ commands: fct_relevel, fct_recode (lets you change a label), fct_reorder
 
 ```{r}
+url = "http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm"
 
+table_marj = 
+  read_html(url) |> 
+  html_nodes(css = "table") |> 
+  first() |>
+  html_table() |> 
+  slice(-1) |> 
+  as_tibble()
+
+#slice -1 is to remove the bottom row
+```
+
+```{r}
+data_marj =
+  table_marj |> 
+  select(-contains("P value")) |> 
+  pivot_longer(
+    -State,
+    names_to = "age_year",
+    values_to = "percent"
+  ) |> 
+  separate(age_year, into = c("age", "year"), sep = "\\(") |> 
+  mutate(
+    year = str_replace(year, "\\)", ""),
+    percent = str_replace(percent, "[a-c$]", ""),
+    percent = as.numeric(percent) 
+  ) |> 
+  filter(!(State %in% c("Total U.S.", "Northeast", "Midwest", "South", "West")))
+
+# contains is doing something very similar to str_detect
+
+# how to replace ) with absolutely nothing. str_trim might work too.
+
+# i'm being specific about [a-c] because if i'm missing someting about how this dataset works, i want this code to break so that I can see that.
+```
+
+## NSDUH -- factors
+```{r}
+data_marj |> 
+  filter(age == "12-17") |> 
+  mutate(State = fct_relevel(State, "Texas", "Oklahoma")) |> 
+  ggplot(aes(State, y = percent, color = year)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+# reordering instead of releveling
+```{r}
+data_marj |> 
+  filter(age == "12-17") |> 
+  mutate(State = fct_reorder(State, percent)) |> 
+  ggplot(aes(State, y = percent, color = year)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+# reording State by percent lowest to. highest. puts things in order of the median value.
+
+#Utah has the lowest median percent in 2014-2015.
 ```
 
