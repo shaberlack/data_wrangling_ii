@@ -1,0 +1,138 @@
+---
+title: "strings_and_factors"
+author: "Sarah Haberlack"
+date: "2023-11-01"
+output: github_document
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+
+library(p8105.datasets)
+library(rvest)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis",
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+## Strings and regex
+
+```{r}
+string_vec = c("my", "name", "is", "jeff")
+
+str_detect(string_vec, "jeff")
+
+str_replace(string_vec, "jeff", "Jeff")
+
+
+```
+
+```{r}
+string_vec = c(
+  "i think we all rule for participating",
+  "i think i have been caught",
+  "i think this will be quite fun actually",
+  "it will be fun, i think"
+  )
+
+str_detect(string_vec, "i think")
+str_detect(string_vec, "^i think")
+## i want to detect the beginning of the line, then "i think"
+
+str_detect(string_vec, "i think$")
+```
+
+```{r}
+string_vec = c(
+  "Y'all remember Pres. HW Bush?",
+  "I saw a green bush",
+  "BBQ and Bushwalking at Molonglo Gorge",
+  "BUSH -- LIVE IN CONCERT!!"
+  )
+
+str_detect(string_vec, "[Bb]ush")
+## for this location, you can detect capital or lowercase B as long as it's followed by "ush"
+```
+
+```{r}
+string_vec = c(
+  '7th inning stretch',
+  '1st half soon to begin. Texas won the toss.',
+  'she is 5 feet 4 inches tall',
+  '3AM - cant sleep :('
+  )
+
+str_detect(string_vec, "^[0-9][a-zA-Z]")
+```
+
+```{r}
+string_vec = c(
+  'Its 7:11 in the evening',
+  'want to go to 7-11?',
+  'my flight is AA711',
+  'NetBios: scanning ip 203.167.114.66'
+  )
+
+str_detect(string_vec, "7.11")
+## dot is a special signal in regular expressions that matches literally any other thing that exists in the string.
+
+## if you want to match a dot specifically, and interpret it as a regular dot:
+
+str_detect(string_vec, "7\\.11")
+
+##because the slash itself is also a special signal, you need two slashes.
+```
+
+```{r}
+string_vec = c(
+  'The CI is [2, 5]',
+  ':-]',
+  ':-[',
+  'I found the answer on pages [6-7]'
+  )
+
+str_detect(string_vec, "\\[")
+```
+
+## Factors
+
+```{r}
+factor_vec = factor(c("male", "male", "female", "female"))
+
+## This will give me information about levels in alphabetical order
+
+as.numeric(factor_vec)
+
+## says realy underneath this, female is a 1 and male is a 2. the integer structure that underlies the factor variable that i have created.
+```
+
+what happens if i relevel...
+
+```{r}
+factor_vec = fct_relevel(factor_vec, "male") 
+
+factor_vec
+
+as.numeric(factor_vec)
+
+```
+
+most used fct_ commands: fct_relevel, fct_recode (lets you change a label), fct_reorder
+
+```{r}
+
+```
+
